@@ -1,0 +1,31 @@
+plugins {
+    id 'java'
+}
+
+version '0.2'
+group   'org.hypermedea'
+
+repositories {
+    mavenCentral()
+    maven { url 'https://repo.gradle.org/gradle/libs-releases' }
+    maven { url 'https://raw.github.com/jacamo-lang/mvn-repo/master' }
+    maven { url "https://hypermedea.github.io/maven" }
+    mavenLocal()
+}
+
+dependencies {
+    implementation group: 'org.jacamo', name: 'jacamo', version: '1.2'
+
+    // note: artifact can also be published to Maven local (see 'publishToMavenLocal' task in main repo)
+    implementation group: 'org.hypermedea', name: 'hypermedea', version: '0.4.1'
+
+    // ROS binding library
+    implementation group: 'org.hypermedea', name: 'ros2-binding', version: '0.4.2'
+}
+
+task run (type: JavaExec, dependsOn: 'classes') {
+    description 'run the ROS example'
+    main 'jacamo.infra.JaCaMoLauncher'
+    args 'turtlesim.jcm'
+    classpath sourceSets.main.runtimeClasspath
+}

@@ -1,0 +1,57 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+}
+
+group 'org.hypermedea'
+version '0.4.2'
+
+java {
+    toolchain {
+        // ensures compatibility with JaCaMo 1.2
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven { url 'https://repo.gradle.org/gradle/libs-releases' }
+    maven { url 'https://raw.github.com/jacamo-lang/mvn-repo/master' }
+    maven { url 'https://hypermedea.github.io/maven' }
+    mavenLocal()
+}
+
+dependencies {
+    compileOnly group: 'org.jacamo', name: 'jacamo', version: '1.2'
+    testImplementation group: 'org.jacamo', name: 'jacamo', version: '1.2'
+
+    compileOnly 'org.hypermedea:hypermedea:0.4.2'
+    testImplementation 'org.hypermedea:hypermedea:0.4.2'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+publishing {
+    publications {
+        rosBinding(MavenPublication) {
+            groupId = group
+            artifactId = 'ros2-binding'
+            version = version
+
+            from components.java
+        }
+    }
+
+    repositories {
+        maven {
+            name = 'Hypermedea'
+            // assumes the hypermedea.github.io repo is cloned next to this repo
+            url = "../hypermedea.github.io/maven"
+        }
+    }
+}

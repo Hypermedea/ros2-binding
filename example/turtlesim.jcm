@@ -1,0 +1,13 @@
+mas turtlesim_mas {
+
+    agent turtlesim {
+        goals: start
+        join: ros_workspace
+        focus: ros_workspace.h
+    }
+
+    workspace ros_workspace  {
+        artifact h: org.hypermedea.HypermedeaArtifact()
+    }
+
+}
