@@ -8,7 +8,6 @@ import javax.json.JsonObjectBuilder;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ExecutionException;
 
 public class ROS2PublishOperation extends ROS2Operation {
 

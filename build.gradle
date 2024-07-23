@@ -38,7 +38,7 @@ test {
 
 publishing {
     publications {
-        rosBinding(MavenPublication) {
+        ros2Binding(MavenPublication) {
             groupId = group
             artifactId = 'ros2-binding'
             version = version

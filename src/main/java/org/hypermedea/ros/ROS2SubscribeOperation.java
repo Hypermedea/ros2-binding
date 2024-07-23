@@ -6,8 +6,6 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.ExecutionException;
 
 public class ROS2SubscribeOperation extends ROS2Operation {
 

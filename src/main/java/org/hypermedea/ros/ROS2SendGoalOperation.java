@@ -1,20 +1,14 @@
 package org.hypermedea.ros;
 
-import cartago.JsonObj;
-import org.hypermedea.ct.RepresentationHandlers;
 import org.hypermedea.op.InvalidFormException;
-import org.hypermedea.op.Response;
 
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
 
 public class ROS2SendGoalOperation extends ROS2Operation {
 

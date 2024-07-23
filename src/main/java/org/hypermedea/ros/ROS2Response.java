@@ -32,7 +32,7 @@ public class ROS2Response extends BaseResponse {
 
         try {
             ByteArrayInputStream in = new ByteArrayInputStream(payload.toString().getBytes());
-            this.payload = RepresentationHandlers.deserialize(in, op.getTargetURI(), JsonHandler.APPLICATION_JSON_CT);
+            this.payload = RepresentationHandlers.deserialize(in, op.getTargetURI(), "application/json");
 
             this.status = ResponseStatus.OK;
         } catch (IOException e) {
