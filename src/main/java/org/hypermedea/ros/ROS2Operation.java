@@ -20,6 +20,15 @@ import java.util.*;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * ROS2 operations are all associated with a single (Web) socket, except for action handling.
+ * When a <code>seng_goal</code> message is sent to an action server, the socket must be left open
+ * in order to receive status updates and the result. In this case, the socket must be shared across
+ * two operations: a {@link ROS2SendGoalOperation} and a {@link ROS2GetStatusOperation}. However,
+ * cancelling the on-going action requires to open a new socket.
+ *
+ * TODO in the current implementation, only one goal per action can be monitored at once (see wsPool).
+ */
 public abstract class ROS2Operation extends BaseOperation {
 
     private class Listener implements WebSocket.Listener {
