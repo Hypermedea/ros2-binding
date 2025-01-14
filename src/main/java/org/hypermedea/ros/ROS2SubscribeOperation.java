@@ -28,7 +28,10 @@ public class ROS2SubscribeOperation extends ROS2Operation {
 
     @Override
     protected void onMessage(JsonObject payload) {
-        Response r = new ROS2Response(payload, ROS2SubscribeOperation.this);
+        // TODO check that payload is well-formed
+        JsonObject msg = payload.getJsonObject("msg");
+
+        Response r = new ROS2Response(msg, ROS2SubscribeOperation.this);
         onResponse(r);
     }
 

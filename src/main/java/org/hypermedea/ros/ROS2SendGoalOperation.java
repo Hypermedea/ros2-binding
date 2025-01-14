@@ -12,16 +12,21 @@ import java.util.UUID;
 
 public class ROS2SendGoalOperation extends ROS2Operation {
 
-    private static final long TIMEOUT = 60l;
+    private static final long TIMEOUT = 60;
+
+    private final String id;
 
     public ROS2SendGoalOperation(String targetURI, Map<String, Object> formFields) {
         super(targetURI, formFields);
+
+        id = UUID.randomUUID().toString();
+
+        keepAlive(getGoalURI());
     }
 
     @Override
     protected void sendSingleRequest() {
         String msgType = getMessageType();
-        String id = UUID.randomUUID().toString();
 
         JsonObjectBuilder msgBuilder = Json.createObjectBuilder()
                 .add("op", "send_action_goal")
@@ -32,7 +37,7 @@ public class ROS2SendGoalOperation extends ROS2Operation {
 
         try {
             Optional<JsonObject> jsonPayload = getJsonPayload();
-            if (jsonPayload.isPresent()) msgBuilder.add("args", jsonPayload.get());
+            jsonPayload.ifPresent(jsonObject -> msgBuilder.add("args", jsonObject));
         } catch (IOException e) {
             throw new InvalidFormException(e);
         }
@@ -40,9 +45,13 @@ public class ROS2SendGoalOperation extends ROS2Operation {
         sendMessage(msgBuilder.build());
 
         ROS2Response r = new ROS2Response(this);
-        r.addLink(ROS2.goalId, target + "#" + id);
+        r.addLink(ROS2.goalId, getGoalURI());
 
         onResponse(r);
+    }
+
+    private String getGoalURI() {
+        return target + "#" + id;
     }
 
 }

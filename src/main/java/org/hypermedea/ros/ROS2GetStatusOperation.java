@@ -14,7 +14,7 @@ public class ROS2GetStatusOperation extends ROS2Operation {
     private final String id;
 
     public ROS2GetStatusOperation(String targetURI, Map<String, Object> formFields) {
-        super(targetURI, formFields);
+        super(targetURI, formFields, true);
 
         try {
             URI uri = new URI(targetURI);
@@ -30,7 +30,7 @@ public class ROS2GetStatusOperation extends ROS2Operation {
             // TODO warn that payload isn't taken into account
         }
 
-        // do nothing, SendGoalOperation should already have subscribed to action feedback
+        // do nothing, SendGoalOperation should already have asked for feedback
     }
 
     @Override
@@ -38,6 +38,8 @@ public class ROS2GetStatusOperation extends ROS2Operation {
         String op = payload.getString("op");
         if (op.equals("action_feedback") || op.equals("action_result")) {
             if (payload.getString("id").equals(id)) {
+                // TODO check status (if action_result)
+
                 if (payload.containsKey("result") && !payload.getBoolean("result")) {
                     onError();
                 } else {

@@ -17,7 +17,6 @@ import java.net.http.WebSocket;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 
@@ -37,7 +36,7 @@ public abstract class ROS2Operation extends BaseOperation {
                 p.next();
                 JsonObject json = p.getObject();
 
-                onGoingOps.forEach(op -> op.onMessage(json));
+                onGoingOps.get(webSocket).forEach(op -> op.onMessage(json));
             } catch (JsonParsingException e) {
                 // TODO warn
             }
@@ -52,19 +51,8 @@ public abstract class ROS2Operation extends BaseOperation {
 
         @Override
         public CompletionStage<?> onClose(WebSocket webSocket, int statusCode, String reason) {
-            URI uriToRemove = null;
-
-            for (URI uri : openSockets.keySet()) {
-                if (openSockets.get(uri).equals(webSocket)) uriToRemove = uri;
-            }
-
-            if (uriToRemove == null) {
-                // TODO warn
-                return null;
-            } else {
-                openSockets.remove(uriToRemove);
-                return new CompletableFuture<>();
-            }
+            // TODO log
+            return WebSocket.Listener.super.onClose(webSocket, statusCode, reason);
         }
 
         @Override
@@ -78,9 +66,9 @@ public abstract class ROS2Operation extends BaseOperation {
 
     private static final WebSocket.Builder wsBuilder = HttpClient.newHttpClient().newWebSocketBuilder();
 
-    private static final Map<URI, WebSocket> openSockets = new HashMap<>();
+    private static final Map<WebSocket, Collection<ROS2Operation>> onGoingOps = new HashMap<>();
 
-    private static final Collection<ROS2Operation> onGoingOps = new HashSet<>();
+    private static final Map<String, WebSocket> wsPool = new HashMap<>();
 
     private final WebSocket socket;
 
@@ -89,17 +77,22 @@ public abstract class ROS2Operation extends BaseOperation {
     protected final String msgType;
 
     public ROS2Operation(String targetURI, Map<String, Object> formFields) {
+        this(targetURI, formFields, false);
+    }
+
+    public ROS2Operation(String targetURI, Map<String, Object> formFields, Boolean reconnect) {
         super(targetURI, formFields);
 
         try {
             URI uri = new URI(targetURI);
             URI conURI = getConnectionURI(uri);
 
-            if (openSockets.containsKey(conURI)) {
-                socket = openSockets.get(conURI);
+            if (reconnect && wsPool.containsKey(targetURI)) {
+                socket = wsPool.get(targetURI);
+                // TODO check that socket is open
             } else {
                 socket = wsBuilder.buildAsync(conURI, new Listener()).get();
-                openSockets.put(conURI, socket);
+                onGoingOps.put(socket, new HashSet<>());
             }
 
             name = uri.getPath();
@@ -107,7 +100,7 @@ public abstract class ROS2Operation extends BaseOperation {
             String msgTypeFromForm = (String) form.get(ROS2.messageType);
             msgType = msgTypeFromForm != null ? msgTypeFromForm : getDefaultMessageType();
 
-            onGoingOps.add(this);
+            onGoingOps.get(socket).add(this);
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         } catch (ExecutionException e) {
@@ -118,7 +111,6 @@ public abstract class ROS2Operation extends BaseOperation {
     }
 
     protected void sendMessage(JsonObject msg) {
-//        socket.sendText(msg.toString(), true);
         try {
             socket.sendText(msg.toString(), true).get();
         } catch (InterruptedException e) {
@@ -134,7 +126,23 @@ public abstract class ROS2Operation extends BaseOperation {
 
     @Override
     protected void end() throws IOException {
-        onGoingOps.remove(this);
+        if (wsPool.containsKey(target)) {
+            try {
+                    socket.sendClose(WebSocket.NORMAL_CLOSURE, "Operation ended by agent").get();
+                    wsPool.remove(target);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            } catch (ExecutionException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        onGoingOps.get(socket).remove(this);
+        if (onGoingOps.get(socket).isEmpty()) onGoingOps.remove(socket);
+    }
+
+    protected void keepAlive(String id) {
+        wsPool.put(id, socket);
     }
 
     protected Optional<JsonObject> getJsonPayload() throws IOException {
