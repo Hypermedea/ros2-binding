@@ -65,11 +65,11 @@
  *   Example for basic publish/subscribe, where the path of the target URI corresponds to a topic name:
  * </p>
  * <pre><code>+!call_cmdvel :
-  .map.create(Form) &
+  .map.create(Form) &amp;
   .map.put(Form, "urn:hypermedea:ros2:messageType", "geometry_msgs/Twist")
   &lt;-
   put(
-    "ros+ws://example.org/turtlesim/cmd_vel",
+    "ros2+ws://example.org/turtlesim/cmd_vel",
     json(...),
     Form
   ) .</code></pre>
@@ -78,13 +78,13 @@
  *   and the URI fragment corresponds to the ID of an on-going action:
  * </p>
  * <pre><code>+!call_shape &lt;-
-  post("ros+ws://example.org/turtle_shape") ;
+  post("ros2+ws://example.org/turtle_shape") ;
   .wait({ +rdf("ros+ws://example.org/turtle_shape", "urn:hypermedea:ros2:goalId", ID) }) ;
   .print(ID) .</code></pre>
  * <p>
  *   See the running example in the {@code /example} folder, in which a Jason agent controls a Turtlesim node.
  *   This example also illustrates some of the configuration points of the ROS binding,
- *   as documented in the {@link org.hypermedea.ros.ROS2 ROS} class.
+ *   listed in the {@link org.hypermedea.ros.ROS2 ROS2} class.
  * </p>
  */
 package org.hypermedea.ros;
