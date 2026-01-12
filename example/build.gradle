@@ -2,7 +2,7 @@ plugins {
     id 'java'
 }
 
-version '0.2'
+version '0.3'
 group   'org.hypermedea'
 
 repositories {
@@ -14,18 +14,23 @@ repositories {
 }
 
 dependencies {
-    implementation group: 'org.jacamo', name: 'jacamo', version: '1.2'
+    implementation group: 'org.jacamo', name: 'jacamo', version: '1.3.0'
 
     // note: artifact can also be published to Maven local (see 'publishToMavenLocal' task in main repo)
-    implementation group: 'org.hypermedea', name: 'hypermedea', version: '0.4.1'
+    implementation group: 'org.hypermedea', name: 'hypermedea', version: '0.5'
 
     // ROS binding library
-    implementation group: 'org.hypermedea', name: 'ros2-binding', version: '0.4.2'
+    implementation group: 'org.hypermedea', name: 'ros2-binding', version: '0.5'
 }
 
 task run (type: JavaExec, dependsOn: 'classes') {
     description 'run the ROS example'
-    main 'jacamo.infra.JaCaMoLauncher'
-    args 'turtlesim.jcm'
+    main 'jason.infra.local.RunLocalMAS'
+    doFirst {
+        mkdir 'log'
+    }
+    args 'turtlesim.mas2j'
     classpath sourceSets.main.runtimeClasspath
 }
+
+defaultTasks 'run'

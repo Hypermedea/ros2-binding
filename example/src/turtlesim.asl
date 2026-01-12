@@ -1,6 +1,6 @@
 action_uri("ros2+ws://localhost:9090/turtle1/rotate_absolute") .
-action_payload(json([ kv(theta, 0.0) ])) .
-action_form([kv("urn:hypermedea:ros2:messageType", "turtlesim/action/RotateAbsolute")]) .
+action_payload(json(M)) :- .random(X) & Theta = X*3.14 & .map.create(M) & .map.put(M, theta, Theta) .
+action_form(M) :- .map.create(M) & .map.put(M, "urn:hypermedea:ros2:messageType", "turtlesim/action/RotateAbsolute") .
 
 +!start :
     action_uri(URI) & action_payload(P) & action_form(F)
@@ -16,7 +16,7 @@ action_form([kv("urn:hypermedea:ros2:messageType", "turtlesim/action/RotateAbsol
 +json(Msg) :
     watching(URI)
     <-
-    if (.member(kv(status, Status), Msg)) {
+    if (.map.get(Msg, status, Status)) {
         .print(Status) ;
         if (Status = 4) {
             .print("Action done, forgetting resource: ", URI) ;
@@ -24,5 +24,4 @@ action_form([kv("urn:hypermedea:ros2:messageType", "turtlesim/action/RotateAbsol
         }
     } .
 
-{ include("$jacamoJar/templates/common-cartago.asl") }
-{ include("$jacamoJar/templates/common-moise.asl") }
+!start .

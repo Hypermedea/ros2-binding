@@ -5,12 +5,12 @@ plugins {
 }
 
 group 'org.hypermedea'
-version '0.4.3'
+version '0.5'
 
 java {
     toolchain {
-        // ensures compatibility with JaCaMo 1.2
-        languageVersion = JavaLanguageVersion.of(17)
+        // ensures compatibility with JaCaMo 1.3.0
+        languageVersion = JavaLanguageVersion.of(21)
     }
 }
 
@@ -23,11 +23,11 @@ repositories {
 }
 
 dependencies {
-    compileOnly group: 'org.jacamo', name: 'jacamo', version: '1.2'
-    testImplementation group: 'org.jacamo', name: 'jacamo', version: '1.2'
+    compileOnly group: 'org.jacamo', name: 'jacamo', version: '1.3.0'
+    testImplementation group: 'org.jacamo', name: 'jacamo', version: '1.3.0'
 
-    compileOnly 'org.hypermedea:hypermedea:0.4.2'
-    testImplementation 'org.hypermedea:hypermedea:0.4.2'
+    compileOnly 'org.hypermedea:hypermedea:0.5'
+    testImplementation 'org.hypermedea:hypermedea:0.5'
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'

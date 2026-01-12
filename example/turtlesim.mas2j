@@ -1,0 +1,9 @@
+MAS turtlesim_mas {
+
+   environment: org.hypermedea.HypermedeaEnvironment
+
+   agents: turtlesim;
+
+   aslSourcePath: "src";
+
+ }

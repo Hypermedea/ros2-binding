@@ -56,6 +56,11 @@ public class ROS2Binding extends BaseProtocolBinding {
 
     @Override
     protected Operation bindPost(String targetURI, Map<String, Object> formFields) {
+        if (formFields.containsKey(ROS2.requestType)) {
+            Object type = formFields.get(ROS2.requestType);
+            if (type.equals(ROS2.callService)) return new ROS2CallServiceOperation(targetURI, formFields);
+        }
+
         return new ROS2SendGoalOperation(targetURI, formFields);
     }
 
